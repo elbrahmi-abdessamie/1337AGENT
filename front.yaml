@@ -40,3 +40,35 @@ spec:
     nodePort: 30080
   selector:
     app: frontend
+---
+
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: builder
+spec:
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: 0  # Ensure rolling starts from 0
+      maxUnavailable: 100%  # This allows all pods to be unavailable during updates
+  replicas: 3  # Number of replicas for the StatefulSet
+  # Other specifications for the StatefulSet
+  template:
+    metadata:
+      labels:
+        app: builder
+    spec:
+      containers:
+      - name: builder-container
+        image: your-image-here
+---
+
+version: '3'
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    restart: always
